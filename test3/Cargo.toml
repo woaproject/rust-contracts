@@ -1,0 +1,18 @@
+[package]
+name = "test3"
+version = "0.1.0"
+authors = ["Demi M. Obenour <demiobenour@gmail.com>"]
+edition = "2018"
+license = "GPL3+"
+copyright = "Copyright 2018 POA Networks Inc"
+
+[dependencies]
+pwasm-ethereum = "^0.8.0"
+pwasm-std = "0.13.0"
+
+[dependencies.parity-hash]
+version = "^1.2.2"
+default-features = false
+
+[lib]
+crate-type = ["cdylib"]
