@@ -14,10 +14,13 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-use pwasm_std::types::Address;
-
-pub trait IBridgeValidators {
-    fn is_validator(&self, validator: Address) -> bool;
-    fn required_signatures(&self) -> usize;
-    fn owner(&self) -> Address;
+use super::super::upgradeability::eternal_storage;
+use pwasm_ethereum::sender;
+use pwasm_abi_derive::eth_abi;
+use pwasm_std::types::{Address};
+/// # Ownable
+///
+/// This contract has an owner address providing basic authorization control
+#[eth_abi(Ownable)]
+trait OwnableTrait: eternal_storage::EternalStorage {
 }

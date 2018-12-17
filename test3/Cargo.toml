@@ -1,18 +1,48 @@
+# Copyright 2018 POA Networks Ltd.
+#
+# This file is part of the POA Networks bridge contracts.
+#
+# The POA Networks bridge contracts are free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <https://www.gnu.org/licenses/>.
 [package]
-name = "test3"
+name = "poa-bridge-contracts"
 version = "0.1.0"
 authors = ["Demi M. Obenour <demiobenour@gmail.com>"]
 edition = "2018"
 license = "GPL3+"
-copyright = "Copyright 2018 POA Networks Inc"
 
 [dependencies]
-pwasm-ethereum = "^0.8.0"
-pwasm-std = "0.13.0"
+pwasm-std = "^0.13.0"
+tiny-keccak = "^1.4.2"
+
+[dependencies.pwasm-ethereum]
+version = "^0.8.0"
+features = ["kip6"]
+
+[dependencies.pwasm-abi]
+git = "ssh://github.com/paritytech/pwasm-abi"
+rev = "7ad42d070735cb26a60ef616241fb2aac9532224"
+
+[dependencies.pwasm-abi-derive]
+git = "ssh://github.com/paritytech/pwasm-abi"
+rev = "7ad42d070735cb26a60ef616241fb2aac9532224"
 
 [dependencies.parity-hash]
 version = "^1.2.2"
 default-features = false
+
+[build-dependencies]
+tiny-keccak = "^1.4.2"
 
 [lib]
 crate-type = ["cdylib"]

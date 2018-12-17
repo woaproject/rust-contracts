@@ -14,10 +14,35 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-use pwasm_std::types::Address;
+#![allow(non_snake_case)]
 
-pub trait IBridgeValidators {
-    fn is_validator(&self, validator: Address) -> bool;
-    fn required_signatures(&self) -> usize;
-    fn owner(&self) -> Address;
+use super::super::bridge_validators::IBridgeValidators;
+use pwasm_ethereum::sender;
+use pwasm_std::{types::U256, Box};
+
+pub struct Validateable(Box<dyn IBridgeValidators>);
+
+impl Validateable {
+    pub fn validator_contract(&self) -> &dyn IBridgeValidators {
+        &*self.0
+    }
+
+    pub fn check_validator(&self) {
+        assert!(
+            self.0.is_validator(sender()),
+            "This method can only be called by a validator"
+        )
+    }
+
+    pub fn check_owner(&self) {
+        assert_eq!(
+            self.0.owner(),
+            sender(),
+            "This method can only be called by the contract owner"
+        )
+    }
+
+    pub fn required_signatures(&self) -> usize {
+        self.0.required_signatures()
+    }
 }

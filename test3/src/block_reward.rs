@@ -14,10 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-use pwasm_std::types::Address;
+use pwasm_std::types::{Address, U256};
 
-pub trait IBridgeValidators {
-    fn is_validator(&self, validator: Address) -> bool;
-    fn required_signatures(&self) -> usize;
-    fn owner(&self) -> Address;
+pub trait IBlockReward {
+    fn add_extra_receiver(&mut self, amount: U256, receiver: Address);
+    fn minted_totally(&self) -> U256;
+    fn minted_totally_by_bridge(bridge: Address) -> U256;
+    fn bridges_allowed_length(&self) -> U256;
 }

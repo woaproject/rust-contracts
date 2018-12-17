@@ -1,29 +1,66 @@
-// This contract will return the address from which it was deployed
+// Copyright 2018 POA Networks Ltd.
+//
+// This file is part of the POA Networks bridge contracts.
+//
+// The POA Networks bridge contracts are free software: you can redistribute it
+// and/or modify it under the terms of the GNU General Public License as
+// published by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program.  If not, see <https://www.gnu.org/licenses/>.
 #![no_std]
 #![feature(alloc)]
-extern crate core;
-extern crate parity_hash;
-extern crate pwasm_ethereum;
 extern crate alloc;
-use pwasm_std::types::H256;
-mod parse_message;
+
+use pwasm_abi_derive::eth_abi;
+use pwasm_ethereum;
+
+use pwasm_std::{
+    types::{Address, U256},
+    Vec,
+};
+mod block_reward;
 mod bridge_validators;
-// The "deploy" will be executed only once on deployment but will not be stored on the blockchain
-#[no_mangle]
-pub fn deploy() {
-    // Lets set the sender address to the contract storage at address "0"
-    pwasm_ethereum::write(
-        &H256::zero().into(),
-        &H256::from(pwasm_ethereum::sender()).into(),
-    );
-    // Note we should't write any result into the call descriptor in deploy.
+mod parse_message;
+mod upgradeability;
+mod upgradeable_contracts;
+use self::upgradeability::upgradeability_storage::{create_storage_input, UpgradeabilityStorage};
+// Declares the dispatch and dispatch_ctor methods
+use pwasm_abi::eth::EndpointInterface;
+
+#[eth_abi(BurnableMintableERC677Token)]
+trait IBurnableMintableERC677Token: IERC677 {
+    fn mint(&self, _: Address, _: U256) -> bool;
+    fn burn(&self, _value: U256);
+    fn claimTokens(&self, _token: Address, _to: Address);
 }
 
-// The following code will be stored on the blockchain.
+#[eth_abi(ERC677)]
+trait IERC677: ERC20 {
+    #[event]
+    fn Transfer(indexed_from: Address, indexed_to: Address, value: U256, data: Vec<u8>);
+    fn transferAndCall(&self, _: Address, _: U256, _: Vec<u8>) -> bool;
+}
+#[cfg(none)]
 #[no_mangle]
 pub fn call() {
-    // Will read the address of the deployer which we wrote to the storage on the deploy stage
-    let owner = pwasm_ethereum::read(&H256::zero().into());
-    // Send a result pointer to the runtime
-    pwasm_ethereum::ret(owner.as_ref());
+    let mut endpoint =
+        UpgradeabilityStorage::new(create_storage_input(U256::zero(), Address::zero()));
+    // Read http://solidity.readthedocs.io/en/develop/abi-spec.html#formal-specification-of-the-encoding for details
+    pwasm_ethereum::ret(&endpoint.dispatch(&pwasm_ethereum::input()));
+}
+
+#[cfg(none)]
+#[no_mangle]
+pub fn deploy() {
+    let mut endpoint =
+        UpgradeabilityStorage::new(create_storage_input(U256::zero(), Address::zero()));
+    //
+    endpoint.dispatch_ctor(&pwasm_ethereum::input());
 }

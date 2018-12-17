@@ -14,10 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-use pwasm_std::types::Address;
 
-pub trait IBridgeValidators {
-    fn is_validator(&self, validator: Address) -> bool;
-    fn required_signatures(&self) -> usize;
-    fn owner(&self) -> Address;
-}
+/// This contract holds all the necessary state variables to carry out the storage of any contract.
+struct EternalStorage {}
